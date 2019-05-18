@@ -9,7 +9,7 @@ var bodyParser = require("body-parser")
 var morganLogger = require("morgan")
 
 
-const PORT = 8220
+const PORT = 80
 
 app.use(morganLogger('dev'))
 
