@@ -1,4 +1,4 @@
-USE DATABASE hasettDev;
+USE hasettDev;
 
 CREATE TABLE IF NOT EXISTS auth(
     auth_id VARCHAR (100) NOT NULL UNIQUE,
