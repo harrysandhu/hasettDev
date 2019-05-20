@@ -1,6 +1,6 @@
 USE hasettDev;
 
-CREATE TABLE auth(
+CREATE TABLE IF NOT EXISTS auth(
     auth_id VARCHAR (100) NOT NULL UNIQUE,
     u_id VARCHAR (100) NOT NULL,
     email_address VARCHAR (255) NOT NULL UNIQUE,
@@ -36,7 +36,7 @@ CREATE TABLE activity_type(
     activity_name VARCHAR (100) NOT NULL,
     activity_desc VARCHAR (200) NOT NULL,
     PRIMARY KEY(activity_type_id)
-)
+);
 
 
 
