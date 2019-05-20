@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS business_users(
 );
 
 CREATE TABLE IF NOT EXISTS business_keywords(
-    keyword_id INT (11) AUTO INCREMENT
+    keyword_id INT (11) AUTO_INCREMENT NOT NULL UNIQUE,
     business_id VARCHAR (100) NOT NULL,
     keyword VARCHAR (100) NOT NULL,
     PRIMARY KEY(business_id)
