@@ -1,6 +1,6 @@
 USE hasettDev;
 
-CREATE TABLE IF NOT EXISTS auth(
+CREATE TABLE auth(
     auth_id VARCHAR (100) NOT NULL UNIQUE,
     u_id VARCHAR (100) NOT NULL,
     email_address VARCHAR (255) NOT NULL UNIQUE,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS auth(
 
 
 
-CREATE TABLE IF NOT EXISTS user_session(
+CREATE TABLE user_session(
     user_session_id VARCHAR (100) NOT NULL UNIQUE,
     u_id VARCHAR (100) NOT NULL,
     ip_address VARCHAR (255) NOT NULL,
@@ -24,14 +24,14 @@ CREATE TABLE IF NOT EXISTS user_session(
 
 
 
-CREATE TABLE IF NOT EXISTS business_type(
+CREATE TABLE business_type(
     business_type_id INT (11) NOT NULL UNIQUE,
     business_name VARCHAR (100) NOT NULL,
     PRIMARY KEY(business_type_id)
 );
 
 
-CREATE TABLE IF NOT EXISTS activity_type(
+CREATE TABLE activity_type(
     activity_type_id INT (11) NOT NULL UNIQUE,
     activity_name VARCHAR (100) NOT NULL,
     activity_desc VARCHAR (200) NOT NULL,
@@ -41,8 +41,8 @@ CREATE TABLE IF NOT EXISTS activity_type(
 
 
 
-CREATE TABLE IF NOT EXISTS users(
-    u_id VARCHAR (100) NOT NULL,
+CREATE TABLE users(
+    u_id VARCHAR (100) NOT NULL UNIQUE,
     first_name VARCHAR (100),
     last_name VARCHAR (100),
     email_address VARCHAR (255) NOT NULL UNIQUE,
@@ -65,20 +65,20 @@ CREATE TABLE IF NOT EXISTS users(
 
 
 
-CREATE TABLE IF NOT EXISTS user_activities(
+CREATE TABLE user_activities(
     user_activity_id INT AUTO_INCREMENT NOT NULL UNIQUE,
     u_id VARCHAR (100) NOT NULL,    
     activity_type_id INT (11) NOT NULL,
     PRIMARY KEY (user_activity_id)
 );
 
--- CREATE TABLE IF NOT EXISTS notifications(
+-- CREATE TABLE notifications(
     
 -- );
 
 
 
-CREATE TABLE IF NOT EXISTS connections(
+CREATE TABLE connections(
     connection_count_id INT AUTO_INCREMENT NOT NULL UNIQUE,
     u_id VARCHAR (100) NOT NULL,
     connection_id VARCHAR (100) NOT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS connections(
 );
 
 
-CREATE TABLE IF NOT EXISTS business_users(
+CREATE TABLE business_users(
     business_id VARCHAR (100) NOT NULL UNIQUE,
     u_id VARCHAR (100) NOT NULL,
     business_type_id INT (11) NOT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS business_users(
     PRIMARY KEY(business_id)
 );
 
-CREATE TABLE IF NOT EXISTS business_keywords(
+CREATE TABLE business_keywords(
     keyword_id INT (11) AUTO INCREMENT
     business_id VARCHAR (100) NOT NULL,
     keyword VARCHAR (100) NOT NULL,
