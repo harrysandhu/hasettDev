@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS auth(
 
 
 
-CREATE TABLE user_session(
+CREATE TABLE IF NOT EXISTS user_session(
     user_session_id VARCHAR (100) NOT NULL UNIQUE,
     u_id VARCHAR (100) NOT NULL,
     ip_address VARCHAR (255) NOT NULL,
@@ -24,14 +24,14 @@ CREATE TABLE user_session(
 
 
 
-CREATE TABLE business_type(
+CREATE TABLE IF NOT EXISTS business_type(
     business_type_id INT (11) NOT NULL UNIQUE,
     business_name VARCHAR (100) NOT NULL,
     PRIMARY KEY(business_type_id)
 );
 
 
-CREATE TABLE activity_type(
+CREATE TABLE IF NOT EXISTS activity_type(
     activity_type_id INT (11) NOT NULL UNIQUE,
     activity_name VARCHAR (100) NOT NULL,
     activity_desc VARCHAR (200) NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE activity_type(
 
 
 
-CREATE TABLE users(
+CREATE TABLE IF NOT EXISTS users(
     u_id VARCHAR (100) NOT NULL UNIQUE,
     first_name VARCHAR (100),
     last_name VARCHAR (100),
@@ -65,7 +65,7 @@ CREATE TABLE users(
 
 
 
-CREATE TABLE user_activities(
+CREATE TABLE IF NOT EXISTS user_activities(
     user_activity_id INT AUTO_INCREMENT NOT NULL UNIQUE,
     u_id VARCHAR (100) NOT NULL,    
     activity_type_id INT (11) NOT NULL,
