@@ -7,9 +7,10 @@ var io = require('socket.io')(server)
 var api = require('./api/api')
 var bodyParser = require("body-parser")
 var morganLogger = require("morgan")
+var cors = require('cors')
 
-
-const PORT = 80
+const PORT = 4040
+app.use(cors())
 
 app.use(morganLogger('dev'))
 
