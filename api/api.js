@@ -38,7 +38,7 @@ api.get("/", verifyAuthToken, (req, res) =>{
         if(err){
             return res.json({userAuthState: false})
         }else {
-            return res.json({usernActionState: true})
+            return res.json({userAuthState: true})
         }
     })
 })
