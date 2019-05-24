@@ -33,6 +33,16 @@ conn.connect((err) =>{
 
 
 
+api.get("/", verifyAuthToken, (req, res) =>{
+    jwt.verify(req.token, publicKey, (err, authData) =>{
+        if(err){
+            return res.json({userAuthState: false})
+        }else {
+            return res.json({usernActionState: true})
+        }
+    })
+})
+
 
 
 api.get("/login", (req, res) =>{
