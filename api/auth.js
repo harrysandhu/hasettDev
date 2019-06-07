@@ -34,7 +34,33 @@ conn.connect((err) =>{
 
 
 auth.get("/check_email_address", (req, res) =>{
+
+    if(!req.query.hasOwnProperty("email")){
+        return res.json({
+                errorStatus: true, 
+                errorCode: "ERROR/INVALID_REQUEST",
+                errorMessage: "Invalid request."
+        })
+    }
+    
+
     let email = req.query.email
+    const emailExpression = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if(email.length < 4){
+        return res.json({
+                errorStatus: true, 
+                errorCode: "ERROR/EMAIL_LENGTH",
+                errorMessage: "Invalid email address"
+            })
+    }
+    else if(!(emailExpression.test(email))){
+        return  res.json({
+                errorStatus: true, 
+                errorCode: "ERROR/EMAIL_INVALID",
+                errorMessage: "Invalid email address"
+            })
+    }
+
     console.log(email)    
     let sql = "SELECT * FROM ?? WHERE ?? = ";
     let inserts = ["auth", "email_address", email ]
