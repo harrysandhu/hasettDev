@@ -24,4 +24,4 @@ server.listen(PORT, () =>{
 
 
 app.use("/api", api)
-
+app.use("/api/auth", auth)

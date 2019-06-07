@@ -44,18 +44,35 @@ api.get("/", verifyAuthToken, (req, res) =>{
 })
 
 
+api.post("/signup", (req, res) =>{
+x
+})
+
+api.get("/user", verifyAuthToken, (req, res) =>{
+     jwt.verify(req.token, publicKey, (err, authData) =>{
+        if(err){
+            console.log(err)
+            res.json({error : 'Unauthorized.', userAuthState: false})
+        }else {
+            console.log(authData)
+            res.json({currentUser: authData})
+        }
+    })
+})
 
 api.get("/login", (req, res) =>{
     
     const username = "harrysandhu"
     const password = "9915081032"
+    const emailAddress = "hrrsand@f.com"
     const salt = crypto.randomBytes(20).toString('hex');
     const passwordHash = sha256.hmac(salt, password)
     const uid = 432
     //put the shit in the database success and all that
 
     const payload  = {
-        username : username, 
+        username : username,
+        emailAddress : emailAddress,
         uid: uid,
         loginTime : Date.now()
     }
@@ -64,13 +81,15 @@ api.get("/login", (req, res) =>{
         subject: username,
         algorithm:  "RS256" 
     }
-    var token = jwt.sign(payload, privateKey, signOptions)
-    console.log("Generated Token: ", token)
+    var authToken = jwt.sign(payload, privateKey, signOptions)
+    console.log("Generated Token: ", authToken)
     return res.json({
         status: 'LOGIN_SUCCESS',
-        token : token
+        authToken : authToken
     })
 })  
+
+
 
 api.post("/post", verifyAuthToken, (req, res) =>{
     //get the auth data from the token
@@ -86,6 +105,7 @@ api.post("/post", verifyAuthToken, (req, res) =>{
 
 
 })
+
 
 
 
