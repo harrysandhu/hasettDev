@@ -62,7 +62,7 @@ auth.get("/check_email_address", (req, res) =>{
     }
 
     console.log(email)    
-    let sql = "SELECT * FROM ?? WHERE ?? = ";
+    let sql = "SELECT * FROM ?? WHERE ?? = ?";
     let inserts = ["auth", "email_address", email ]
     sql = mysql.format(sql, inserts)
 
