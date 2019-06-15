@@ -1,101 +1,212 @@
-var express = require("express")
-var auth = express.Router()
-var fs = require('fs')
-var jwt = require('jsonwebtoken')
-var crypto = require('crypto')
-var sha256 = require('js-sha256')
-var privateKey = fs.readFileSync('./security/private.key', 'utf8')
-var publicKey = fs.readFileSync('./security/public.key', 'utf8')
-var mysql = require("mysql")
+var express = require("express");
+var auth = express.Router();
+var fs = require("fs");
+var jwt = require("jsonwebtoken");
+var crypto = require("crypto");
+var sha256 = require("js-sha256");
+var privateKey = fs.readFileSync("./security/private.key", "utf8");
+var publicKey = fs.readFileSync("./security/public.key", "utf8");
+var mysql = require("mysql");
+import { conn } from "../functions/db";
+import { RESPONSES } from "../functions/helperConstants";
+const https = require("https");
 
-import {verifyAuthToken} from '../helperFunctions/auth'
+//Helper Function Imports
+import {
+	verifyAuthToken,
+	genRandomToken,
+	checkEmailAddress,
+	checkPassword,
+	executeQuery
+} from "../functions/helpers";
 
-const HOST = "138.68.28.178"
-const USER = "dazzler"
-const PASSWORD = "@./%_1ab!dazzler" 
-const DB = "hasettDev"
+/**
+**** JWT INSTRUCTIONS
+	 userAuthPayload = {
+	auth_id,
+	u_id,
+	email_address,
+	signup_datetime
+}
+ */
 
+/**
+* METHOD: GET
+* REQUEST PARAMS: @param {String} email
+* Checks the email address validity.
+* @returns {Object} RESPONSE.
+*/
+auth.get("/check_email_address", async function(req, res) {
+	if (!req.query.hasOwnProperty("email")) {
+		return res.json(RESPONSES.INVALID_REQUEST);
+	}
+	let email = req.query.email;
+	try {
+		let checkEmailAddress_RESPONSE = await checkEmailAddress(email);
+		return res.json(checkEmailAddress_RESPONSE);
+	} catch (e) {
+		return res.json(RESPONSES.ERR_SYSTEM);
+	}
+});
 
-var conn = mysql.createConnection({
-    host: HOST,
-    user: USER,
-    password: PASSWORD,
-    database: DB
-})
+/**
+* METHOD: POST
+* REQUEST PARAMS: @param {String} email
+*				  @param {String} password
+* Validates email and password,
+* Generates random salt, auth_id, u_id and password_hash.
+* username default value = ''.
+* Inserts data into `auth` table {	auth_id, 
+									u_id, 
+									username, 
+									password_hash, 
+									email_address, 
+									salt
+								 }.
+* @returns {Object} -> {authToken, errorStatus: false} RESPONSE, user data object if successful, 
+	error Object on fail.
+*/
+auth.post("/signup", async function(req, res) {
 
+	//check if request body params exist
+	if (
+		!req.body.hasOwnProperty("email") ||
+		!req.body.hasOwnProperty("password")
+	) {
+		return res.json(RESPONSES.INVALID_REQUEST);
+	}
 
-conn.connect((err) =>{
-    if(err)
-        console.log("Connection error!", err)
-    else console.log("Connection successful")
-})
-
-
-
-
-auth.get("/check_email_address", (req, res) =>{
-
-    if(!req.query.hasOwnProperty("email")){
-        return res.json({
-                errorStatus: true, 
-                errorCode: "ERROR/INVALID_REQUEST",
-                errorMessage: "Invalid request."
-        })
-    }
-    
-
-    let email = req.query.email
-    const emailExpression = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if(email.length < 4){
-        return res.json({
-                errorStatus: true, 
-                errorCode: "ERROR/EMAIL_LENGTH",
-                errorMessage: "Invalid email address"
-            })
-    }
-    else if(!(emailExpression.test(email))){
-        return  res.json({
-                errorStatus: true, 
-                errorCode: "ERROR/EMAIL_INVALID",
-                errorMessage: "Invalid email address"
-            })
-    }
-
-    console.log(email)    
-    let sql = "SELECT * FROM ?? WHERE ?? = ?";
-    let inserts = ["auth", "email_address", email ]
-    sql = mysql.format(sql, inserts)
-
-    conn.query(sql, (error, result, fields) =>{
-        if(error){
-            console.log(error)
-            return ({
-                errorStatus: true, 
-                errorCode: "ERROR/DB",
-                errorMessage: "Something went wrong!"
-            })
-        }
-        if(result.length === 0){
-            //username is available
-             res.json({
-                errorStatus: false,
-                emailStatus: true
-            })
-        }else if(result.length > 0){
-            res.json({
-                errorStatus: false,
-                emailStatus: false
-            })
-        }
-
-    })
+	//prepare all the fields
+	let email = req.body.email;
+	let password = req.body.password;
+	let salt = crypto.randomBytes(20).toString('hex')
+	let password_hash = sha256.hmac(salt, password);
+	let auth_id = sha256.hmac(salt, genRandomToken(email.split("@")[0], 11));
+	let u_id = sha256.hmac(salt, genRandomToken(email.split("@")[0], 11));
 
 
-})
+	
+	try {
+		//check email address
+		let checkEmailAddress_RESPONSE = await checkEmailAddress(email);
+		//check password
+		let checkPassword_RESPONSE = await checkPassword(password);
+		
+		//--------LOG-------//
+		console.log(checkEmailAddress_RESPONSE);
+		console.log(checkPassword_RESPONSE);
+
+
+		// if emailStatus and passwordStatus are true
+		if (
+			checkEmailAddress_RESPONSE.emailStatus &&
+			checkPassword_RESPONSE.passwordStatus
+		) {
+			
+
+			//////////////////
+			//`auth` table//
+			/////////////////
+			let sql = "INSERT INTO auth SET ?";
+
+			//sql inserts
+			let inserts = {
+				auth_id: auth_id,
+				u_id: u_id,
+				username: [email].toString(),
+				password_hash: password_hash,
+				email_address: [email].toString(),
+				salt: salt
+			};
+
+			//prepare sql statement
+			sql = mysql.format(sql, inserts);
+			
+
+
+			//////////////////
+			//`users` table//
+			/////////////////
+			let usersTableSQL = "INSERT INTO users SET ?";
+
+			//sql inserts
+			let usersInserts = {
+				u_id: u_id,
+				email_address: [email].toString(),
+				username: [email].toString()
+			}
+
+			//prepare sql statement
+			usersTableSQL = mysql.format(usersTableSQL, usersInserts)
+
+			//get current user, by u_id
+			let getCurrentUserDataSQL = "SELECT u_id, email_address, signup_datetime FROM ?? WHERE ?? = ?"
+
+			
+			//current users inserts
+			let getCurrentUserInserts = ["users", 'u_id', u_id]
+
+			
+			//prepare sql statement
+			getCurrentUserDataSQL = mysql.format(getCurrentUserDataSQL, getCurrentUserInserts)
+
+			
+			try {
+				//insert into auth response
+				let mysqlQueryResponse = await executeQuery(sql);
+				//insert into users response
+				let usersMysqlQueryResponse = await executeQuery(usersTableSQL)
+				//select from users, the current user
+				let getCurrentUserResponse = await executeQuery(getCurrentUserDataSQL)
+
+
+				//initialize userAuthPayload response
+				let userAuthPayload = {
+					auth_id,
+					u_id,
+					email_address: email,
+					signup_datetime : getCurrentUserResponse[0]['signup_datetime']
+				}
+
+
+				
+				//TODO: jwt sign options
+				let signOptions = {	
+					subject: u_id,
+					algorithm: "RS256"
+				}
+
+
+				//Create the jwt authToken using userAuthPayload
+				let authToken = jwt.sign(userAuthPayload, privateKey, signOptions)
+
+				
+				//--------LOG-------//
+				console.log(authToken)
+				console.log(userAuthPayload)
+				
+				//SUCCESS response object
+				let successResponse = {
+					errorStatus: false,
+					authToken : authToken,
+				}
+				return res.json(successResponse);
+			} catch (e) {
+				console.log(e)
+				//e -> comes from the async helper functions, on error -> errorStatus is true
+				return res.json(e);
+			}
+		} else {
+			return res.json(RESPONSES.INVALID_REQUEST);
+		}
+	} catch (e) {
+		console.log(e);
+		return res.json(RESPONSES.ERR_SYSTEM);
+	}
+});
 
 
 
 
 
-
-module.exports = auth
+module.exports = auth;

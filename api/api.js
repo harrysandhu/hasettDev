@@ -8,7 +8,7 @@ var privateKey = fs.readFileSync('./security/private.key', 'utf8')
 var publicKey = fs.readFileSync('./security/public.key', 'utf8')
 var mysql = require("mysql")
 
-import {verifyAuthToken} from '../helperFunctions/auth'
+import {verifyAuthToken} from '../functions/helpers'
 
 const HOST = "138.68.28.178"
 const USER = "dazzler"
@@ -44,9 +44,7 @@ api.get("/", verifyAuthToken, (req, res) =>{
 })
 
 
-api.post("/signup", (req, res) =>{
-x
-})
+
 
 api.get("/user", verifyAuthToken, (req, res) =>{
      jwt.verify(req.token, publicKey, (err, authData) =>{
