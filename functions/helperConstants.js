@@ -21,11 +21,6 @@ export const RESPONSES = {
         errorCode: null,
         errorMessage: null
     },
-    EMAIL_EXISTS: {
-        errorStatus: true, 
-        errorCode: 'ERROR/EMAIL_EXISTS',
-        errorMessage: 'A user with this email already exists.'
-    },
     ERR_CONNECTION: {
         errorStatus: true,
         errorCode: "ERROR/ERR_CONNECTION",
@@ -43,12 +38,17 @@ export const RESPONSES = {
     },
     'EMAIL_AVAILABLE':{
         errorStatus: false,
+        errorCode: null,
+        errorMessage: null,
         emailStatus: true
     },
-    'EMAIL_UNAVAILABLE':{
-        errorStatus: false,
+      EMAIL_UNAVAILABLE: {
+        errorStatus: true, 
+        errorCode: 'ERROR/EMAIL_UNAVAILABLE',
+        errorMessage: 'A user with this email already exists.',
         emailStatus: false
     },
+  
     'INVALID_REQUEST': {
         errorStatus: true, 
         errorCode: "ERROR/INVALID_REQUEST",
@@ -56,7 +56,45 @@ export const RESPONSES = {
     },
     'PASSWORD_VALID':{
         errorStatus: false,
+         errorCode: null,
+        errorMessage: null,
         passwordStatus: true
+    },
+    'USERNAME_AVAILABLE': {
+        errorStatus: false,
+        errorCode: null,
+        errorMessage: null,
+        usernameStatus: true
+    },
+    'USERNAME_UNAVAILABLE' : {
+        errorStatus: true,
+        errorCode: 'ERROR/USERNAME_UNAVAILABLE',
+        errorMessage: 'Username is taken.',
+        usernameStatus: false
+    },
+
+    'USER_UNAUTHORIZED': {
+        errorStatus: true,
+        errorCode: 'ERROR/USER_UNAUTHORIZED',
+        errorMessage: 'Unauthorized.'
+    },
+    'USERNAME_LENGTH' : {
+        errorStatus: true,
+        errorCode: 'ERROR/USERNAME_LENGTH',
+        errorMessage: 'Username must be minimum 2 characters long.'
+    },
+    'USERNAME_FORMAT' : {
+        errorStatus: true,
+        errorCode: 'ERROR/USERNAME_FORMAT',
+        errorMessage : 'Username can only contain . - _ as special characters.'
+    },
+    'IMAGE_UPLOAD_ERROR': {
+        errorStatus: true,
+        errorCode: 'ERROR/IMAGE_UPLOAD_ERROR',
+        errorMessage: 'Couldn\'t complete that operation. Please try again.'
     }
+
+    
+
     
 }

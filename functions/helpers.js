@@ -3,6 +3,7 @@ import { RESPONSES } from "./helperConstants";
 import { conn } from "./db";
 var mysql = require("mysql");
 
+
 export function verifyAuthToken(req, res, next) {
 	//get the auth header value
 	const authToken = req.headers["authorization"];
@@ -80,6 +81,32 @@ export async function checkEmailAddress(email) {
 	}
 }
 
+
+export async function checkUsername(username){
+    const usernameExpression = /^[a-z]*[-._]?[a-z]*$/
+    username = username.trim().toLowerCase()
+    if(username.length < 3)
+        return RESPONSES.USERNAME_LENGTH
+    else if(!usernameExpression.test(username)){
+        return RESPONSES.USERNAME_FORMAT
+    }
+
+    console.log("username Testing:", username)
+    let sql = "SELECT username FROM ?? WHERE ?? = ?"
+    let inserts = ['users', 'username', username]
+    sql = mysql.format(sql, inserts)
+    try{
+        let mysqlQueryResponse = await executeQuery(username)
+        if(mysqlQueryResponse.length === 0){
+            return RESPONSES.USERNAME_AVAILABLE
+        }else if(mysqlQueryResponse.length > 0){
+            return RESPONSES.USERNAME_UNAVAILABLE
+        }
+    }catch(e){
+        return e
+    }
+}
+
 export async function checkPassword(password) {
 	let response = RESPONSES.PASSWORD_VALID;
 
@@ -88,3 +115,5 @@ export async function checkPassword(password) {
 	}
 	return response;
 }
+
+
