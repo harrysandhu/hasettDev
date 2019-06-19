@@ -3,12 +3,6 @@ import { RESPONSES } from "./helperConstants";
 import { conn } from "./db";
 var mysql = require("mysql");
 
-// conn.connect((err) =>{
-//     if(err)
-//         console.log("Connection error!", err)
-//     else console.log("Connection successful")
-// })
-
 export function verifyAuthToken(req, res, next) {
 	//get the auth header value
 	const authToken = req.headers["authorization"];
