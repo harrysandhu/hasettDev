@@ -59,7 +59,7 @@ auth.get("/check_email_address", async function(req, res) {
 
  */
 auth.get("/check_username", async function(req, res){
-	if(!req.hasOwnProperty('username')) {
+	if(!req.query.hasOwnProperty('username')) {
 		return res.json(RESPONSES.INVALID_REQUEST)
 	}
 	let username = req.query.username
