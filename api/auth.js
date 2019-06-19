@@ -49,6 +49,30 @@ auth.get("/check_email_address", async function(req, res) {
 	}
 });
 
+
+
+/**
+* METHOD: GET,
+* REQUEST PARAMS @param {String} username
+* checks the username availability
+* @returns {Object} RESPONSE
+
+ */
+auth.get("/check_username", async function(req, res){
+	if(!req.hasOwnProperty('username')) {
+		return res.json(RESPONSES.INVALID_REQUEST)
+	}
+	let username = req.query.username
+	try{
+		let checkUsername_RESPONSE = await checkUsername(username)
+		return res.json(checkUsername_RESPONSE)
+	}catch(e){
+		return res.json(RESPONSES.ERR_SYSTEM)
+	}
+})
+
+
+
 /**
 * METHOD: POST
 * REQUEST PARAMS: @param {String} email
@@ -99,8 +123,8 @@ auth.post("/signup", async function(req, res) {
 
 		// if emailStatus and passwordStatus are true
 		if (
-			checkEmailAddress_RESPONSE.emailStatus &&
-			checkPassword_RESPONSE.passwordStatus
+			!checkEmailAddress_RESPONSE.errorStatus &&
+			!checkPassword_RESPONSE.errorStatus
 		) {
 			
 
@@ -164,8 +188,7 @@ auth.post("/signup", async function(req, res) {
 				let userAuthPayload = {
 					auth_id,
 					u_id,
-					email_address: email,
-					signup_datetime : getCurrentUserResponse[0]['signup_datetime']
+					email_address: email
 				}
 
 
@@ -204,8 +227,6 @@ auth.post("/signup", async function(req, res) {
 		return res.json(RESPONSES.ERR_SYSTEM);
 	}
 });
-
-
 
 
 
