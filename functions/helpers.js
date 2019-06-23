@@ -68,7 +68,7 @@ export async function executeQuery(sql) {
 
 export async function checkEmailAddress(email) {
 	const emailExpression = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-	if (email.length < LENGTH_CONSTANTS.EMAIL) {
+	if (email.length < EMAIL_MIN_LENGTH) {
 		return RESPONSES.EMAIL_LENGTH;
 	} else if (!emailExpression.test(email)) {
 		return RESPONSES.EMAIL_FORMAT;
@@ -86,7 +86,8 @@ export async function checkEmailAddress(email) {
 			return RESPONSES.EMAIL_UNAVAILABLE;
 		}
 	} catch (e) {
-		return e;
+		console.log(e)
+		throw e;
 	}
 }
 
