@@ -1,7 +1,13 @@
 import { RESPONSES } from "./helperConstants";
-
+var jwt = require('jsonwebtoken')
 import { conn } from "./db";
 var mysql = require("mysql");
+import { EMAIL_MIN_LENGTH, 
+		EMAIL_MAX_LENGTH,
+		USERNAME_MIN_LENGTH, 
+		USERNAME_MAX_LENGTH,
+		PASSWORD_MIN_LENGTH } from './lengthConstants'
+
 
 
 export function verifyAuthToken(req, res, next) {
@@ -50,7 +56,10 @@ function emailUnavailable() {
 export async function executeQuery(sql) {
 	return new Promise((resolve, reject) => {
 		conn.query(sql, (error, results, fields) => {
-			if (error) reject(RESPONSES.ERR_DB_CONNECTION);
+			if (error) {
+				console.log("db error at executeQuery: ", error)
+				reject(RESPONSES.ERR_DB_CONNECTION);
+			}
 
 			resolve(results);
 		});
@@ -59,7 +68,7 @@ export async function executeQuery(sql) {
 
 export async function checkEmailAddress(email) {
 	const emailExpression = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-	if (email.length < 4) {
+	if (email.length < LENGTH_CONSTANTS.EMAIL) {
 		return RESPONSES.EMAIL_LENGTH;
 	} else if (!emailExpression.test(email)) {
 		return RESPONSES.EMAIL_FORMAT;
@@ -82,38 +91,115 @@ export async function checkEmailAddress(email) {
 }
 
 
+/**	
+ * Checks and validates username.
+ * @param {string} username - username to check.
+ * @optional @param {string} u_id - u_id to check for,
+ * ignores this u_id in sql query.
+ * 
+ */
 export async function checkUsername(username){
-    const usernameExpression = /^[a-z]*[-._]?[a-z]*$/
+	//username regex expression
+	const usernameExpression = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]+$/
+	//trim any spaces
     username = username.trim().toLowerCase()
-    if(username.length < 3)
-        return RESPONSES.USERNAME_LENGTH
+	//min length = 2
+    if(
+		username.length < USERNAME_MIN_LENGTH ||
+		username.length > USERNAME_MAX_LENGTH
+	) {
+    	return RESPONSES.USERNAME_LENGTH
+	}
     else if(!usernameExpression.test(username)){
         return RESPONSES.USERNAME_FORMAT
     }
+	var sql, inserts;
+	
 
-    console.log("username Testing:", username)
-    let sql = "SELECT username FROM ?? WHERE ?? = ?"
-    let inserts = ['users', 'username', username]
-    sql = mysql.format(sql, inserts)
-    try{
-        let mysqlQueryResponse = await executeQuery(username)
-        if(mysqlQueryResponse.length === 0){
-            return RESPONSES.USERNAME_AVAILABLE
-        }else if(mysqlQueryResponse.length > 0){
-            return RESPONSES.USERNAME_UNAVAILABLE
-        }
-    }catch(e){
-        return e
-    }
+	try{
+		if(arguments.length == 1){
+			sql = "SELECT username FROM ?? WHERE ?? = ?"
+			inserts = ['users', 'username', username]
+			sql = mysql.format(sql, inserts)
+			let mysqlQueryResponse = await executeQuery(sql)
+			if(mysqlQueryResponse.length === 0){
+				return RESPONSES.USERNAME_AVAILABLE
+			}else{
+				return RESPONSES.USERNAME_UNAVAILABLE
+			}
+		}else if(
+				arguments.length == 2 && 
+				arguments[1] !== null
+				){
+			let u_id = arguments[1]
+			sql = "SELECT username, u_id FROM ?? WHERE ?? = ?"
+			inserts = ['users', 'username', username]
+			sql = mysql.format(sql, inserts)
+			let mysqlQueryResponse = await executeQuery(sql)
+			if(mysqlQueryResponse.length === 0){
+				return RESPONSES.USERNAME_AVAILABLE
+			}else if(
+				mysqlQueryResponse.length === 1 &&
+				mysqlQueryResponse[0]['u_id'] === u_id
+				){
+				console.log('mysql query response object: ', mysqlQueryResponse[0])
+				return RESPONSES.USERNAME_AVAILABLE
+			}else{
+				return RESPONSES.USERNAME_UNAVAILABLE
+			}
+
+		}
+	}catch(e){
+		console.log(e)
+		return RESPONSES.USERNAME_UNAVAILABLE
+	}
+
+
 }
+
+// export async function checkUsername(username){
+//     const usernameExpression = /^[a-z]*[-._]?[a-z]*$/
+//     username = username.trim().toLowerCase()
+//     if(username.length < 3)
+//         return RESPONSES.USERNAME_LENGTH
+//     else if(!usernameExpression.test(username)){
+//         return RESPONSES.USERNAME_FORMAT
+//     }
+
+//     console.log("username Testing:", username)
+//     let sql = "SELECT username FROM ?? WHERE ?? = ?"
+//     let inserts = ['users', 'username', username]
+//     sql = mysql.format(sql, inserts)
+//     try{
+//         let mysqlQueryResponse = await executeQuery(sql)
+//         if(mysqlQueryResponse.length === 0){
+//             return RESPONSES.USERNAME_AVAILABLE
+//         }else if(mysqlQueryResponse.length > 0){
+//             return RESPONSES.USERNAME_UNAVAILABLE
+//         }
+//     }catch(e){
+// 		console.log(e)
+//         return e
+//     }
+// }
 
 export async function checkPassword(password) {
 	let response = RESPONSES.PASSWORD_VALID;
 
-	if (password.length < 8) {
+	if (password.length < PASSWORD_MIN_LENGTH) {
 		return RESPONSES.PASSWORD_LENGTH;
 	}
 	return response;
+}
+
+
+export async function jwtVerifyUser(authToken, publicKey){
+	return new Promise((resolve, reject) =>{
+		jwt.verify(authToken, publicKey, (err, currentUser) =>{
+			if(err) reject(RESPONSES.USER_UNAUTHORIZED)
+			resolve(currentUser)
+		})
+	})
 }
 
 
