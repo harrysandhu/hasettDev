@@ -1,7 +1,7 @@
 
 var fs = require('fs')
-import { RESPONSES } from "./helperConstants";
-
+import { RESPONSES, BASE_DEV } from "./helperConstants";
+var path = require('path')
 /**
  * Converts the base64 string to image
  * and saves it to "users/u_id/profile/filename.ext"
@@ -31,21 +31,43 @@ function decodeBase64Image(dataString){
     response.data = new Buffer(matches[2], 'base64')
     return response
 }
-
+/**
+ * Decodes base64 data string to a jpg or png image,
+ * and saves the image.
+ * @param {string} u_id - user id to uniquely identify the directory.
+ * @param {string} filename - randomly generated filename to uniquely identify the image.
+ * @param {string} imageData - base64 data string.
+ *
+ * @returns {Object} {`boolean`, `string`} - on success- {errorStatus: false, imageURI}
+ */
 export async function saveImage(u_id, filename, imageData){
 
-    var ext = data.substring(11, data.indexOf(";base64"))
+    var ext = imageData.substring(11, imageData.indexOf(";base64"))
     var imageBuffer = decodeBase64Image(imageData)
     if(imageBuffer.hasOwnProperty("errorStatus")){
         return RESPONSES.IMAGE_UPLOAD_ERROR
     }
-    let imageFile = "/users/"+u_id+"/profile/"+filename+"."+ext
+    // let imageFile = "../private/users/"+u_id+"/profile/"+filename+"."+ext
+     let imageName = filename+"."+ext
+     let userDir = path.join(__dirname, '../private/user/' + u_id)
+    
+    if (!fs.existsSync(userDir)){
+        fs.mkdirSync(userDir);
+    }
+    let imageDir = path.join(userDir, 'profile')
+    console.log(imageDir)
+
+     if (!fs.existsSync(imageDir)){
+        fs.mkdirSync(imageDir);
+    }
+    let imageFile = imageDir + '/' +imageName
     console.log(imageFile)
     fs.writeFile(imageFile, imageBuffer.data, (err) =>{
         console.log(err)
           return RESPONSES.IMAGE_UPLOAD_ERROR 
     })
-    let imageURI = BASE_DEV + u_id+"/profile/" + imageFile 
+    let imageURI = BASE_DEV + u_id+"/profile/" + imageName 
+    
     return {
         errorStatus: false,
         imageURI: imageURI
