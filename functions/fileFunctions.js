@@ -41,7 +41,8 @@ function decodeBase64Image(dataString){
  * @returns {Object} {`boolean`, `string`} - on success- {errorStatus: false, imageURI}
  */
 export async function saveImage(u_id, filename, imageData){
-
+    console.log("IMAGE DATA: :::::::", imageData)
+    
     var ext = imageData.substring(11, imageData.indexOf(";base64"))
     var imageBuffer = decodeBase64Image(imageData)
     if(imageBuffer.hasOwnProperty("errorStatus")){
