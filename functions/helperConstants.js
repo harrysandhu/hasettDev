@@ -11,6 +11,11 @@ export const RESPONSES = {
         errorCode: 'ERROR/EMAIL_LENGTH',
         errorMessage: 'Please enter a valid email address.'
     },
+    EMAIL_MAX_LENGTH : {
+        errorStatus: true, 
+        errorCode: 'ERROR/EMAIL_LENGTH',
+        errorMessage: 'Please enter a valid email address.'
+    },
     EMAIL_FORMAT: {
         errorStatus: true, 
         errorCode: 'ERROR/EMAIL_FORMAT',
@@ -81,20 +86,23 @@ export const RESPONSES = {
     'USERNAME_LENGTH' : {
         errorStatus: true,
         errorCode: 'ERROR/USERNAME_LENGTH',
-        errorMessage: 'Username must be minimum 2 characters long.'
+        errorMessage: 'Username must be 2-15 characters long..'
     },
     'USERNAME_FORMAT' : {
         errorStatus: true,
         errorCode: 'ERROR/USERNAME_FORMAT',
-        errorMessage : 'Username can only contain . - _ as special characters.'
+        errorMessage : 'Username can only contain . _ as special characters and cannot begin or end with `.` '
     },
     'IMAGE_UPLOAD_ERROR': {
         errorStatus: true,
         errorCode: 'ERROR/IMAGE_UPLOAD_ERROR',
-        errorMessage: 'Couldn\'t complete that operation. Please try again.'
+        errorMessage: 'Couldnt complete that operation. Please try again.'
     }
 
     
 
     
 }
+
+
+export const BASE_DEV = "http://localhost:4040/media/"
