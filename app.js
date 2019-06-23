@@ -17,8 +17,8 @@ app.use(cors())
 app.use(morganLogger('dev'))
 
 app.use(express.static('private'))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json({limit: '5mb'}))
+app.use(bodyParser.urlencoded({ limit: '5mb', extended: false }))
 app.set('json spaces', 2);
 
 server.listen(PORT, () =>{
