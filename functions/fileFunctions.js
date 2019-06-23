@@ -19,8 +19,6 @@ import { RESPONSES } from "./helperConstants";
  * saves to /users/user123/profile/myfile.jpg
  */
 
-const BASE_DEV = "http://localhost:4040/media/"
-
 function decodeBase64Image(dataString){
     var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
     response = {};

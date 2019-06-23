@@ -22,6 +22,11 @@ media.get("/:u_id/profile/:filename", async (req, res) =>{
 })
 
 
+media.get("/defaultUser/profile/:filename", async (req, res) =>{
+    return res.sendFile(filename, {root: path.join(__dirname, '../public/defaultUser/profile')})
+})
+
+
 
 
 module.exports = media
