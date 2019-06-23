@@ -146,7 +146,7 @@ api.post("/user_data", verifyAuthToken, async (req, res) =>{
         } = req.body.userData
         
         // 
-        let profilePictureURI = BASE_DEV + "/defaultUser/profile/" + 'defaultProfilePicture.jpg' 
+        let profilePictureURI = BASE_DEV + "defaultUser/profile/" + 'defaultProfilePicture.jpg' 
         let cryptFilename = 'defaultProfilePicture.jpg'
         if(profilePictureIsSelected){
              cryptFilename = crypto.randomBytes(10).toString('hex')

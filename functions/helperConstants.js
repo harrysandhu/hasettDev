@@ -105,4 +105,4 @@ export const RESPONSES = {
 }
 
 
-export const BASE_DEV = "http://localhost:4040/media/"
+export const BASE_DEV = "https://truffen.com/media/"

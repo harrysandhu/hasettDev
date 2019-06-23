@@ -46,6 +46,7 @@ auth.get("/check_email_address", async function(req, res) {
 		let checkEmailAddress_RESPONSE = await checkEmailAddress(email);
 		return res.json(checkEmailAddress_RESPONSE);
 	} catch (e) {
+		console.log(e)
 		return res.json(RESPONSES.ERR_SYSTEM);
 	}
 });
