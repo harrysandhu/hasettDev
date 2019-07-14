@@ -69,8 +69,7 @@ auth.get("/check_username", async function(req, res){
 		let checkUsername_RESPONSE = await checkUsername(username)
 		return res.json(checkUsername_RESPONSE)
 	}catch(e){
-		console.log(e)
-		return res.json(RESPONSES.ERR_SYSTEM)
+		return res.json(e)
 	}
 })
 

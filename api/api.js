@@ -27,7 +27,7 @@ import {
 
 import {
     saveImage
-} from "../functions/fileFunctions"
+} from "../functions/fileFunctions" 
 
 
 var conn = mysql.createConnection({
@@ -121,71 +121,49 @@ api.post("/post", verifyAuthToken, (req, res) =>{
 
 api.post("/user_data", verifyAuthToken, async (req, res) =>{
     try{
-        //verify jwt token and get the currentUser
-        let currentUser = await jwtVerifyUser(req.token, publicKey)
-
-        //destructure currentUser
-        let {
-            auth_id,
-            u_id,
-            email_address
-        } = currentUser
-        
-        //Check if the currentUser has 'userData'. 
-        //userData would have a contract of the fields below.
+        let currentUser  = await jwtVerifyUser(req.token, publicKey)
         if(!req.body.hasOwnProperty('userData')){
             throw RESPONSES.INVALID_REQUEST
+        }else if(!req.body.userData.hasOwnProperty("name") ||
+                !req.body.userData.hasOwnProperty("username") ||
+                !req.body.userData.hasOwnProperty("userDescription") ||
+                !req.body.userData.hasOwnProperty("profilePictureImageData") ||
+                !req.body.userData.hasOwnProperty("profilePictureIsSelected")
+                ) {
+            throw RESPONSES.INVALID_REQUEST
         }
-        //userData needs to have the following fields.
-        let {
-            nameTF,
-            usernameTF,
-            userDescriptionTF,
-            profilePictureImageData,
-            profilePictureIsSelected
-        } = req.body.userData
-        
-        // 
-        let profilePictureURI = BASE_DEV + "defaultUser/profile/" + 'defaultProfilePicture.jpg' 
+        let {userData} = req.body
+
+        //Default profile picture data
         let cryptFilename = 'defaultProfilePicture.jpg'
-        if(profilePictureIsSelected){
-             cryptFilename = crypto.randomBytes(10).toString('hex')
+        let profilePictureURI = BASE_DEV + "defaultUser/profile/" + cryptFilename
 
-            let profilePictureURI_RESPONSE = await saveImage(u_id, cryptFilename, profilePictureImageData)
-
-            console.log(profilePictureURI_RESPONSE)
-            if(profilePictureURI_RESPONSE.errorStatus){
-                return profilePictureURI_RESPONSE
-            }else{
-                profilePictureURI = profilePictureURI_RESPONSE.imageURI
-            }
-
+        if(userData.profilePictureIsSelected){
+            //filename made of psuedorandom characters
+            cryptFilename = crypto.randomBytes(10).toString('hex')
+            //save profile picture
+            
+            //URI in the form of  https://truffen.com/yada/yada.jpg
+            //MUTATE profilePictureURI
+            profilePictureURI = await saveImage(currentUser.u_id, cryptFilename, userData.profilePictureImageData) 
         }
-
-        let checkUsername_RESPONSE = await checkUsername(usernameTF, u_id)
-
-            //---------LOG---------
-
-        if(!checkUsername_RESPONSE.usernameStatus){
-                throw checkUsername_RESPONSE
-        }
-
-        let authSQL = "UPDATE auth SET ? WHERE auth_id = ?"
-            let usernameInsert = {username: usernameTF}
-            let authInserts = [usernameInsert, auth_id]
+        await checkUsername(userData.username, currentUser.u_id)
+         let authSQL = "UPDATE auth SET ? WHERE auth_id = ?"
+            let usernameInsert = {username: userData.username}
+            let authInserts = [usernameInsert, currentUser.auth_id]
         authSQL = mysql.format(authSQL, authInserts)
         console.log(authSQL)
         let authQueryResponse = await executeQuery(authSQL)
         console.log(authQueryResponse)
         let userSQL = "UPDATE users SET ? WHERE ?? = ?"
          let userDataInserts = {
-                name: nameTF,
-                username: usernameTF,
-                userDescription: userDescriptionTF,
+                name: userData.name,
+                username: userData.username,
+                userDescription: userData.userDescription,
                 profilePictureURI: profilePictureURI,
                 profilePictureFilename: cryptFilename
             }
-            let userInserts = [userDataInserts, 'u_id', u_id]
+            let userInserts = [userDataInserts, 'u_id', currentUser.u_id]
             userSQL = mysql.format(userSQL, userInserts)
 
 
@@ -194,13 +172,11 @@ api.post("/user_data", verifyAuthToken, async (req, res) =>{
 
 
     }catch(e){
-        console.log(e)
+        //e will a "RESPONSE Object"
+        console.log(new Error().stack.split(/\r\n|\r|\n/g)[1].trim(), e)
         return res.json(e)
     }
-    
 })
-
-
 
 
 

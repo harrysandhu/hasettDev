@@ -9,8 +9,14 @@ var publicKey = fs.readFileSync('./security/public.key', 'utf8')
 var path = require('path')
 
 
-
+/*
+* Profile media endpoint.
+* @param u_id : user id
+* @param filename : name of media file
+* @returns {file} the file in u_id's directory.
+*/
 media.get("/:u_id/profile/:filename", async (req, res) =>{
+
     let {
         u_id,
         filename
@@ -22,6 +28,11 @@ media.get("/:u_id/profile/:filename", async (req, res) =>{
 })
 
 
+
+/*
+* Serves the default profile picture
+* @returns {file} defaultProfilePicture.jpg
+*/
 media.get("/defaultUser/profile/:filename", async (req, res) =>{
     return res.sendFile(filename, {root: path.join(__dirname, '../public/defaultUser/profile')})
 })
