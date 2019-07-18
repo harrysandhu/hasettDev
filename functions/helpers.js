@@ -100,6 +100,8 @@ export async function checkEmailAddress(email) {
  * 
  */
 export async function checkUsername(username){
+	return new Promise( async (resolve, reject) =>{
+
 	//username regex expression
 	const usernameExpression = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]+$/
 	//trim any spaces
@@ -109,13 +111,14 @@ export async function checkUsername(username){
 		username.length < USERNAME_MIN_LENGTH ||
 		username.length > USERNAME_MAX_LENGTH
 	) {
-    	return RESPONSES.USERNAME_LENGTH
+		 console.log(new Error().stack.split(/\r\n|\r|\n/g)[1].trim())
+    	reject(RESPONSES.USERNAME_LENGTH)
 	}
     else if(!usernameExpression.test(username)){
-        return RESPONSES.USERNAME_FORMAT
+    	 console.log(new Error().stack.split(/\r\n|\r|\n/g)[1].trim())
+        reject(RESPONSES.USERNAME_FORMAT)
     }
 	var sql, inserts;
-	
 
 	try{
 		if(arguments.length == 1){
@@ -124,9 +127,10 @@ export async function checkUsername(username){
 			sql = mysql.format(sql, inserts)
 			let mysqlQueryResponse = await executeQuery(sql)
 			if(mysqlQueryResponse.length === 0){
-				return RESPONSES.USERNAME_AVAILABLE
+				resolve(RESPONSES.USERNAME_AVAILABLE)
 			}else{
-				return RESPONSES.USERNAME_UNAVAILABLE
+				 console.log(new Error().stack.split(/\r\n|\r|\n/g)[1].trim())
+				reject(RESPONSES.USERNAME_UNAVAILABLE)
 			}
 		}else if(
 				arguments.length == 2 && 
@@ -138,23 +142,25 @@ export async function checkUsername(username){
 			sql = mysql.format(sql, inserts)
 			let mysqlQueryResponse = await executeQuery(sql)
 			if(mysqlQueryResponse.length === 0){
-				return RESPONSES.USERNAME_AVAILABLE
+				resolve(RESPONSES.USERNAME_AVAILABLE)
 			}else if(
 				mysqlQueryResponse.length === 1 &&
 				mysqlQueryResponse[0]['u_id'] === u_id
 				){
 				console.log('mysql query response object: ', mysqlQueryResponse[0])
-				return RESPONSES.USERNAME_AVAILABLE
+				resolve(RESPONSES.USERNAME_AVAILABLE)
 			}else{
-				return RESPONSES.USERNAME_UNAVAILABLE
+				 console.log(new Error().stack.split(/\r\n|\r|\n/g)[1].trim())
+				reject(RESPONSES.USERNAME_UNAVAILABLE)
 			}
 
 		}
 	}catch(e){
-		console.log(e)
-		return RESPONSES.USERNAME_UNAVAILABLE
+		console.log(new Error().stack.split(/\r\n|\r|\n/g)[1].trim(), e)
+		reject(RESPONSES.USERNAME_UNAVAILABLE)
 	}
 
+	})
 
 }
 
@@ -185,12 +191,10 @@ export async function checkUsername(username){
 // }
 
 export async function checkPassword(password) {
-	let response = RESPONSES.PASSWORD_VALID;
-
-	if (password.length < PASSWORD_MIN_LENGTH) {
-		return RESPONSES.PASSWORD_LENGTH;
-	}
-	return response;
+	 return new Promise((resolve, reject) => {
+        if(password === null || password.length < 8) reject(RESPONSES.PASSWORD_LENGTH)
+        else resolve(RESPONSES.SUCCESS)
+    })
 }
 
 
