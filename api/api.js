@@ -60,17 +60,31 @@ api.get("/", verifyAuthToken, (req, res) =>{
 
 
 
-api.get("/user", verifyAuthToken, (req, res) =>{
-     jwt.verify(req.token, publicKey, (err, authData) =>{
-        if(err){
-            console.log(err)
-            return res.json({error : 'Unauthorized.', userAuthState: false})
-        }else {
-            console.log(authData)
-            return res.json(authData)
+api.get("/user", verifyAuthToken, async (req, res) =>{
+    try{
+        let currentUser = jwtVerifyUser(req.token, publicKey)
+
+        //get user data and merge into currentUser object
+        let currentUserDataSQL = "SELECT * FROM ?? WHERE ?? = ?";
+        let currentUserDataInserts = ["users", "u_id", currentUser.u_id]
+
+        currentUserDataSQL = mysql.format(currentUserDataSQL, currentUserDataInserts)
+        let currentUserData = await executeQuery(currentUserDataSQL)
+        currentUser = {...currentUser, ...currentUserData}
+        return res.json(currentUser)
+
+    }catch(e){
+        if(e.errorStatus){
+            console.log("Error at GET /user", e)
+            return res.json(e)
         }
-    })
+        return res.json(RESPONSES.ERR_SYSTEM)
+        
+
+    }
 })
+
+
 
 api.get("/login", (req, res) =>{
     
