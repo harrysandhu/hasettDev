@@ -62,8 +62,8 @@ api.get("/", verifyAuthToken, (req, res) =>{
 
 api.get("/user", verifyAuthToken, async (req, res) =>{
     try{
-        let currentUser = jwtVerifyUser(req.token, publicKey)
-
+        let currentUser = await jwtVerifyUser(req.token, publicKey)
+        console.log(currentUser)
         //get user data and merge into currentUser object
         let currentUserDataSQL = "SELECT * FROM ?? WHERE ?? = ?";
         let currentUserDataInserts = ["users", "u_id", currentUser.u_id]
