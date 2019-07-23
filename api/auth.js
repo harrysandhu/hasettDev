@@ -231,5 +231,35 @@ auth.post("/signup", async function(req, res) {
 });
 
 
+// api.post("/login", (req, res) =>{
+
+// 	if(!req.body.hasOwnProperty('user_public'))
+// })
+
 
 module.exports = auth;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -64,10 +64,10 @@ api.get("/user", verifyAuthToken, (req, res) =>{
      jwt.verify(req.token, publicKey, (err, authData) =>{
         if(err){
             console.log(err)
-            res.json({error : 'Unauthorized.', userAuthState: false})
+            return res.json({error : 'Unauthorized.', userAuthState: false})
         }else {
             console.log(authData)
-            res.json({currentUser: authData})
+            return res.json(authData)
         }
     })
 })
@@ -119,9 +119,16 @@ api.post("/post", verifyAuthToken, (req, res) =>{
 })
 
 
+
+
+
+
+
 api.post("/user_data", verifyAuthToken, async (req, res) =>{
     try{
         let currentUser  = await jwtVerifyUser(req.token, publicKey)
+        console.log(currentUser)
+
         if(!req.body.hasOwnProperty('userData')){
             throw RESPONSES.INVALID_REQUEST
         }else if(!req.body.userData.hasOwnProperty("name") ||
