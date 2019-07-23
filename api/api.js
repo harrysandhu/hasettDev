@@ -69,8 +69,8 @@ api.get("/user", verifyAuthToken, async (req, res) =>{
         let currentUserDataInserts = ["users", "u_id", currentUser.u_id]
 
         currentUserDataSQL = mysql.format(currentUserDataSQL, currentUserDataInserts)
-        let currentUserData = await executeQuery(currentUserDataSQL)
-        console.log(currentUserData)
+        let currentUserDataResult = await executeQuery(currentUserDataSQL)
+        let currentUserData = currentUserDataResult[0]
         currentUser = {...currentUser, ...currentUserData}
         return res.json(currentUser)
 
