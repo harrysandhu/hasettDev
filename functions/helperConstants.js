@@ -23,8 +23,8 @@ export const RESPONSES = {
     },
     SUCCESS: {
         errorStatus: false,
-        errorCode: null,
-        errorMessage: null
+        errorCode: "",
+        errorMessage: ""
     },
     ERR_CONNECTION: {
         errorStatus: true,
@@ -43,8 +43,8 @@ export const RESPONSES = {
     },
     'EMAIL_AVAILABLE':{
         errorStatus: false,
-        errorCode: null,
-        errorMessage: null,
+        errorCode: "",
+        errorMessage: "",
         emailStatus: true
     },
       EMAIL_UNAVAILABLE: {
@@ -61,14 +61,14 @@ export const RESPONSES = {
     },
     'PASSWORD_VALID':{
         errorStatus: false,
-         errorCode: null,
-        errorMessage: null,
+         errorCode: "",
+        errorMessage: "",
         passwordStatus: true
     },
     'USERNAME_AVAILABLE': {
         errorStatus: false,
-        errorCode: null,
-        errorMessage: null,
+        errorCode: "",
+        errorMessage: "",
         usernameStatus: true
     },
     'USERNAME_UNAVAILABLE' : {
@@ -97,6 +97,26 @@ export const RESPONSES = {
         errorStatus: true,
         errorCode: 'ERROR/IMAGE_UPLOAD_ERROR',
         errorMessage: 'Couldnt complete that operation. Please try again.'
+    },
+    INVALID_PRIMARY_FIELD : {
+      errorStatus :true,
+        errorCode: 'ERROR/INVALID_PRIMARY_FIELD',
+        errorMessage: 'Please enter a valid Email Address/Username'  
+    },
+    EMAIL_LOGIN_FAIL: {
+        errorStatus :true,
+        errorCode: 'ERROR/EMAIL_LOGIN_FAIL',
+        errorMessage :"The email and password you entered did not match our records. Please try again."
+    },
+    USERNAME_LOGIN_FAIL : {
+        errorStatus :true,
+        errorCode: 'ERROR/USERNAME_LOGIN_FAIL',
+        errorMessage :"The username and password you entered did not match our records. Please try again."
+    },
+    USER_NOT_FOUND_LOGIN_FAIL : {
+        errorStatus :true,
+        errorCode: 'ERROR/USER_NOT_FOUND_LOGIN_FAIL',
+        errorMessage : "User with this account doesn't exist."
     }
 
     
