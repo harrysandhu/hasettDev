@@ -77,7 +77,119 @@ auth.get("/check_username", async function(req, res){
 
 /**
 * METHOD: POST
-* REQUEST PARAMS: @param {String} email
+* REQUEST BODY: @param {String} primaryField - email_address or username
+*				@param {String} password
+* 				@param {String} primaryFieldType	
+* Validates and logs in the user
+* Generates random salt, auth_id, u_id and password_hash.
+* username default value = ''.
+
+* @returns {Object} -> {authToken, errorStatus: false} RESPONSE, user data object if successful, 
+	error Object on fail.
+*/
+auth.post("/login", async function(req, res){
+	if (
+		!req.body.hasOwnProperty("primaryField") ||
+		!req.body.hasOwnProperty("password") ||
+		!req.body.hasOwnProperty("primaryFieldType")
+	) {
+		return res.json(RESPONSES.INVALID_REQUEST);
+	}
+	//primaryFieldType -> email-address or username
+	try {
+		let {
+			primaryField,
+			password,
+			primaryFieldType
+		} = req.body
+		console.log(req.body)
+
+		console.log(primaryFieldType)
+		if(primaryFieldType !== "email_address" && primaryFieldType !== "username") {
+			console.log("primary field messed up.")
+			throw RESPONSES.INVALID_PRIMARY_FIELD
+		}
+
+		let users_sql = "";
+
+		if(primaryFieldType === "email_address")
+			users_sql = "SELECT u_id, email_address FROM users WHERE email_address = ?"
+		else
+			users_sql = "SELECT u_id, username FROM users WHERE username = ?"
+
+		let usersSqlInserts = [primaryField];
+
+		users_sql = mysql.format(users_sql, usersSqlInserts)
+		console.log(users_sql)
+		let usersSqlResult =  await executeQuery(users_sql)
+		console.log("usersSqlResult : ", usersSqlResult)
+
+		if(usersSqlResult.length !== 1) {
+			throw RESPONSES.USER_NOT_FOUND_LOGIN_FAIL
+		}
+
+		let user = usersSqlResult[0]
+
+
+		let auth_sql = "SELECT * FROM auth WHERE ?? = ?"
+		let authSqlInserts = ["u_id", user.u_id]
+
+		auth_sql = mysql.format(auth_sql, authSqlInserts)
+		let authSqlResult = await executeQuery(auth_sql)
+		console.log("authSqlResult : ", authSqlResult)
+		if(authSqlResult.length !== 1) {
+			throw RESPONSES.ERR_SYSTEM
+		}
+
+		let user_auth = authSqlResult[0]
+
+		
+		if(sha256.hmac(user_auth.salt, password) === user_auth.password_hash){
+			//initialize userAuthPayload response
+				let userAuthPayload = {
+					auth_id: user_auth.auth_id,
+					u_id: user_auth.u_id,
+					email_address: user_auth.email_address
+				}
+				let signOptions = {	
+					subject: user_auth.u_id,
+					algorithm: "RS256"
+				}
+				let authToken = jwt.sign(userAuthPayload, privateKey, signOptions)
+
+				
+				//--------LOG-------//
+				console.log(authToken)
+				console.log(userAuthPayload)
+				
+				//SUCCESS response object
+				let successResponse = {
+					errorStatus: false,
+					authToken : authToken
+				}
+				return res.json(successResponse);
+
+
+		}	
+
+		let error = (primaryFieldType === "email_address") ? RESPONSES.EMAIL_LOGIN_FAIL : RESPONSES.USERNAME_LOGIN_FAIL;
+		return res.json(error)
+
+	}catch(e){
+		console.log("login error: ", e)
+		return res.json(e);
+	}
+})
+
+
+
+
+
+
+
+/**
+* METHOD: POST
+* REQUEST BODY: @param {String} email
 *				  @param {String} password
 * Validates email and password,
 * Generates random salt, auth_id, u_id and password_hash.
