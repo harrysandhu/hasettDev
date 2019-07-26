@@ -20,7 +20,7 @@ export function verifyAuthToken(req, res, next) {
 		//next middleware
 		next();
 	} else {
-		res.json({ error: "Unauthorized." });
+		res.json({ error: "Unauthorized.", userAuthState: false });
 	}
 }
 
