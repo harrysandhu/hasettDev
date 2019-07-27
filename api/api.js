@@ -87,36 +87,6 @@ api.get("/user", verifyAuthToken, async (req, res) =>{
 
 
 
-api.get("/login", (req, res) =>{
-    
-    const username = "harrysandhu"
-    const password = "9915081032"
-    const emailAddress = "hrrsand@f.com"
-    const salt = crypto.randomBytes(20).toString('hex');
-    const passwordHash = sha256.hmac(salt, password)
-    const uid = 432
-    //put the shit in the database success and all that
-
-    const payload  = {
-        username : username,
-        emailAddress : emailAddress,
-        uid: uid,
-        loginTime : Date.now()
-    }
-
-    var signOptions =  {
-        subject: username,
-        algorithm:  "RS256" 
-    }
-    var authToken = jwt.sign(payload, privateKey, signOptions)
-    console.log("Generated Token: ", authToken)
-    return res.json({
-        status: 'LOGIN_SUCCESS',
-        authToken : authToken
-    })
-})  
-
-
 
 api.post("/post", verifyAuthToken, (req, res) =>{
     //get the auth data from the token

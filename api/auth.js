@@ -124,7 +124,7 @@ auth.post("/login", async function(req, res){
 		let usersSqlResult =  await executeQuery(users_sql)
 		console.log("usersSqlResult : ", usersSqlResult)
 
-		if(usersSqlResult.length !== 1) {
+		if(usersSqlResult.length < 1) {
 			throw RESPONSES.USER_NOT_FOUND_LOGIN_FAIL
 		}
 
