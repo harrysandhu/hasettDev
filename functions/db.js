@@ -10,7 +10,8 @@ export var conn = mysql.createConnection({
     host: HOST,
     user: USER,
     password: PASSWORD,
-    database: DB
+    database: DB,
+    charset : 'utf8mb4'
 })
 
 conn.connect(err => {
