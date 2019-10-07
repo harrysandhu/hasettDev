@@ -6,8 +6,8 @@ var crypto = require("crypto");
 var sha256 = require("js-sha256");
 var privateKey = fs.readFileSync("./security/private.key", "utf8");
 var publicKey = fs.readFileSync("./security/public.key", "utf8");
-var mysql = require("mysql");
-import { conn } from "../functions/db";
+// var mysql = require("mysql");
+// import { conn } from "../functions/db";
 import { RESPONSES } from "../functions/helperConstants";
 const https = require("https");
 
