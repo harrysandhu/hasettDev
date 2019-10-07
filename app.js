@@ -5,6 +5,8 @@ var app = express()
 var server = require("http").Server(app)
 var io = require('socket.io')(server)
 var api = require('./api/api')
+//v2 api
+var main = require('./api/v2/main')
 var auth = require("./api/auth")
 var media = require("./api/media")
 var bodyParser = require("body-parser")
@@ -29,3 +31,4 @@ server.listen(PORT, () =>{
 app.use("/api", api)
 app.use("/api/auth", auth)
 app.use("/media", media)
+app.use("/api/v2", main)
