@@ -181,11 +181,18 @@ export default class User {
     }
 
 
+    static async validatePhone(phone:string) :Promise<Result<SResponse, Error>>{
+        let fs = FS.PhoneNumberSettings;
+        if(phone){
+            if(phone.length < fs.minLength || phone.length > fs.maxLength)
+                return Promise.reject(Result.Failure(ERROR_RESPONSE.phoneNumber.invalid))
+            else
+                return Promise.resolve(Result.Success(RESPONSE.phoneNumber.valid))
+        }
+   
 
-    
-
-
-
+    return Promise.reject(Result.Failure(ERROR_RESPONSE.phoneNumber.invalid))
+ }
     
 
 }
