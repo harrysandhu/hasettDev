@@ -1,7 +1,7 @@
 import { RESPONSES } from "./helperConstants";
 var jwt = require('jsonwebtoken')
-import { conn } from "./db";
-var mysql = require("mysql");
+// import { conn } from "./db";
+// var mysql = require("mysql");
 import { EMAIL_MIN_LENGTH, 
 		EMAIL_MAX_LENGTH,
 		USERNAME_MIN_LENGTH, 
@@ -22,6 +22,11 @@ export function verifyAuthToken(req, res, next) {
 	} else {
 		res.json({ error: "Unauthorized.", userAuthState: false });
 	}
+}
+
+
+export function genVerificationCode(){
+	return Math.floor((Math.random() * 100000))
 }
 
 export function genRandomToken(seedText, length) {
