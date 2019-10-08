@@ -49,17 +49,14 @@ var privateKey = fs.readFileSync('./security/private.key', 'utf8');
 var publicKey = fs.readFileSync('./security/public.key', 'utf8');
 var mysql = require("mysql");
 var verifyAuthToken = require('../../functions/helpers').verifyAuthToken;
+var genVerificationCode = require('../../functions/helpers').genVerificationCode;
 var RESPONSES = require('../../functions/helperConstants').RESPONSES;
 var BASE_DEV = require('../../functions/helperConstants').BASE_DEV;
 var User_1 = __importDefault(require("../../core/User"));
 var Category_1 = __importDefault(require("../../core/Category"));
 var ErrorResponse_1 = require("../../core/helper/ErrorResponse");
-// class User{
-//     name:string;
-//     constructor(name:string){
-//         this.name = name
-//     }
-// }
+var aws_sdk_1 = __importDefault(require("aws-sdk"));
+require('dotenv').config();
 main.get("/", verifyAuthToken, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var result, error_1;
     return __generator(this, function (_a) {
@@ -166,12 +163,17 @@ main.get("/category", function (req, res) { return __awaiter(void 0, void 0, voi
         }
     });
 }); });
-main.get("/new_category", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+/**
+* @method POST
+* Gets the related categories to the query category keyword.
+* @return CategoryResult ->  Category[]
+ */
+main.post("/category", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var result, error_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!req.query.keyword)
+                if (!req.body.keyword)
                     return [2 /*return*/, res.json(ErrorResponse_1.ERROR_RESPONSE.INVALID_REQUEST)];
                 _a.label = 1;
             case 1:
@@ -191,21 +193,86 @@ main.get("/new_category", function (req, res) { return __awaiter(void 0, void 0,
         }
     });
 }); });
-// main.get("/user", verifyAuthToken, (req:any, res:any) :any =>{
-//     try{
-//         let result:any = User.jwtVerifyUser(req.token, publicKey);
-//         console.log("result", result)
-//           if(result){
-//             return res.json({'result': result})
-//         }
-//         throw new Error(result);
-//     }catch(error){
-//         console.log("error at /", error)
-//         return res.json(error)
-//     }
-// })
-// main.get("/hello", verifyAuthToken, (req:any, res:any): any =>{
-//     console.log("hello\n")
-//     return res.send(RESPONSES.SUCCESS)
-// })
+/**
+ * @method GET
+ * Validates the phone number, generates a 5 digit code and sends an SMS.
+ * @return PhoneVerification (type) the code, phone number, messageId.
+  */
+main.get("/phonenumbbercode", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var validateRes, code_1, params, publishTextPromise, error_6;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.query.pn)
+                    return [2 /*return*/, res.json(ErrorResponse_1.ERROR_RESPONSE.INVALID_REQUEST)];
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, User_1.default.validatePhone(req.query.pn)];
+            case 2:
+                validateRes = _a.sent();
+                if (validateRes) {
+                    code_1 = genVerificationCode();
+                    params = {
+                        Message: "Your verification code: " + code_1,
+                        PhoneNumber: "+" + req.query.pn,
+                        MessageAttributes: {
+                            'AWS.SNS.SMS.SenderID': {
+                                'DataType': 'String',
+                                'StringValue': "HDVerify1"
+                            }
+                        }
+                    };
+                    publishTextPromise = new aws_sdk_1.default.SNS({ apiVersion: '2010-03-31' }).publish(params).promise();
+                    publishTextPromise.then(function (data) {
+                        res.end(JSON.stringify({ MessageID: data.MessageId, code: code_1, phoneNumber: req.query.pn }));
+                    });
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_6 = _a.sent();
+                console.log(error_6);
+                return [2 /*return*/, res.json(error_6)];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+main.get("/sendSMS", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var validateRes, params, publishTextPromise, error_7;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.query.pn)
+                    return [2 /*return*/, res.json(ErrorResponse_1.ERROR_RESPONSE.INVALID_REQUEST)];
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, User_1.default.validatePhone(req.query.pn)];
+            case 2:
+                validateRes = _a.sent();
+                if (validateRes) {
+                    params = {
+                        Message: req.query.message,
+                        PhoneNumber: "+" + req.query.pn,
+                        MessageAttributes: {
+                            'AWS.SNS.SMS.SenderID': {
+                                'DataType': 'String',
+                                'StringValue': 'HDVerify1'
+                            }
+                        }
+                    };
+                    publishTextPromise = new aws_sdk_1.default.SNS({ apiVersion: '2010-03-31' }).publish(params).promise();
+                    publishTextPromise.then(function (data) {
+                        res.end(JSON.stringify({ MessageID: data.MessageId, message: req.query.message, phoneNumber: req.query.pn }));
+                    });
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_7 = _a.sent();
+                console.log(error_7);
+                return [2 /*return*/, res.json(error_7)];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
 module.exports = main;
