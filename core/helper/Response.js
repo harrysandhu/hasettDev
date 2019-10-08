@@ -1,28 +1,28 @@
-import SResponse from '../Interfaces/SResponse'
-
-export const RESPONSE = {
-    username : {
-        available : <SResponse>{
-            message:'Username is available',
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RESPONSE = {
+    username: {
+        available: {
+            message: 'Username is available',
             isValid: true
         }
     },
     email: {
-        valid: <SResponse>{
+        valid: {
             message: 'Email is valid',
             isValid: true
         }
     },
     password: {
-        valid :<SResponse>{
+        valid: {
             message: "Password is valid.",
             isValid: true
         }
     },
     phoneNumber: {
-        valid: <SResponse>{
+        valid: {
             message: "Phone is valid.",
             isValid: true
         }
     }
-}
+};

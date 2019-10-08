@@ -1,70 +1,66 @@
-import Error from '../Interfaces/Error'
-
-
-export const ERROR_RESPONSE = {
-    INVALID_REQUEST: <Error>{
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ERROR_RESPONSE = {
+    INVALID_REQUEST: {
         message: "Invalid Request.",
         type: 'INVALID_REQUEST',
         code: 400
     },
-    user:{
-        authException: <Error>{
+    user: {
+        authException: {
             message: "Log in required.",
             type: "AUTH_EXCEPTION",
             code: 400
         }
     },
-    username : {
-        length: <Error>{
+    username: {
+        length: {
             message: "Username must be 3-15 characters long.",
             type: 'USERNAME_LENGTH',
             code: 422
         },
-        format: <Error>{
+        format: {
             message: "Username can only contain . _ as special characters and cannot begin or end with `.` ",
             type: "USERNAME_FORMAT",
             code: 422
         },
-        unavailable: <Error>{
+        unavailable: {
             message: "Username is taken.",
             type: "USERNAME_UNAVAILABLE",
             code: 422
         }
     },
-    email : {
-        invalid: <Error>{
+    email: {
+        invalid: {
             message: "Please provide a valid email address.",
             type: "EMAIL_INVALID",
             code: 422
         },
-        taken: <Error>{
+        taken: {
             message: "An account with this email already exists.",
             type: "EMAIL_TAKEN",
             code: 422
         }
     },
     password: {
-        length: <Error>{
+        length: {
             message: "Password must be at least 8 characters long.",
             type: "PASSWORD_LENGTH",
             code: 422
         }
     },
     category: {
-        invalid : <Error>{
-            message : "Invalid keyword for category.",
+        invalid: {
+            message: "Invalid keyword for category.",
             type: "CATEGORY_INVALID",
             code: 322
         }
     },
     phoneNumber: {
-        invalid: <Error>{
+        invalid: {
             message: "Invalid Phone Number.",
             type: "PHONE_INVALID",
             code: 322
         }
     }
-}
-
-
-
+};
