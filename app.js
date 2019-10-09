@@ -28,7 +28,7 @@ server.listen(PORT, () =>{
 })
 
 app.get("/text", (req, res) =>{
-    res.sendFile(path.join(__dirname, "/index.html"))
+    res.sendFile(path.join(__dirname, "/text.html"))
 })
 
 
