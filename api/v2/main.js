@@ -55,6 +55,8 @@ var BASE_DEV = require('../../functions/helperConstants').BASE_DEV;
 var User_1 = __importDefault(require("../../core/User"));
 var Category_1 = __importDefault(require("../../core/Category"));
 var ErrorResponse_1 = require("../../core/helper/ErrorResponse");
+var cors = require('cors');
+main.use(cors);
 var aws_sdk_1 = __importDefault(require("aws-sdk"));
 require('dotenv').config();
 main.get("/", verifyAuthToken, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {

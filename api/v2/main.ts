@@ -26,7 +26,9 @@ import Category from '../../core/Category'
 import CategoryInterface  from '../../core/Category'
 import {ERROR_RESPONSE} from '../../core/helper/ErrorResponse'
 import {RESPONSE} from '../../core/helper/Response'
+var cors = require('cors')
 
+main.use(cors)
 import AWS from 'aws-sdk';
 require('dotenv').config();
 

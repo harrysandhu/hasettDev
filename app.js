@@ -27,6 +27,10 @@ server.listen(PORT, () =>{
     console.log("listening on port :" , PORT)
 })
 
+app.get("/text", (req, res) =>{
+    res.sendFile(path.join(__dirname, "/index.html"))
+})
+
 
 app.use("/api", api)
 app.use("/api/auth", auth)
