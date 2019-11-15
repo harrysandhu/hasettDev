@@ -32,6 +32,11 @@ app.get("/text", (req, res) =>{
 })
 
 
+app.get("/text2", (req, res) =>{
+    res.sendFile(path.join(__dirname, "/text2.html"))
+})
+
+
 app.use("/api", api)
 app.use("/api/auth", auth)
 app.use("/media", media)
