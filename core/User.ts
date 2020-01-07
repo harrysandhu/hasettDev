@@ -186,6 +186,7 @@ export default class User {
                         return Promise.reject(Result.Failure(ERROR_RESPONSE.phoneNumber.taken))
                     }
                 }catch(e){
+                    console.log("error at checkphone", e)
                     return Promise.reject(Result.Failure(ERROR_RESPONSE.INVALID_REQUEST))
                 }finally{
                     client.release();
