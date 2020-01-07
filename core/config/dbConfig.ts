@@ -4,15 +4,19 @@ let connections = {
     firestar : 'host=firestar.postgres.database.azure.com port=5432 dbname=hasettDev user=firestar_user@firestar password=@./%_1ab@psql1 sslmode=require'
 }
 
+
+
 export const firepool = new Pool({
-    user: 'firestar_user@firestar',
-    host: 'firestar.postgres.database.azure.com',
-    database: 'hasettDev',
-    password: '@./%_1ab@psql1',
-    port: 5432,
-    ssl: true
+    user : 'harryxsandhu',
+    password : 'gxbxmfy039gdph44',
+    host : 'firestore-x-1-do-user-1754324-0.db.ondigitalocean.com',
+    port : 25060,
+    database : 'firestoredb',
+    ssl : true
 })
 
+
+//postgresql://harryxsandhu:gxbxmfy039gdph44@firestore-x-1-do-user-1754324-0.db.ondigitalocean.com:25060/firestoredb?sslmode=require
 x('fewsa', 'g');
 
 async function x(username:string, uId?:string){
@@ -20,11 +24,10 @@ async function x(username:string, uId?:string){
     const client = await firepool.connect();
    
 
-
         try{
             await client.query('BEGIN')
-            const queryText = 'SELECT * FROM _user WHERE username = $1 AND userId <> $2';
-            const res = await client.query(queryText, [username, uId])
+            const queryText = 'SELECT current_date'
+            const res = await client.query(queryText)
             //select so no need to commi t;
             console.log(res.rows)
         }catch(e){

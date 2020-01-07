@@ -43,45 +43,7 @@ main.get("/", verifyAuthToken, async (req:any, res:any) =>{
 })
 
 
-main.get("/validate/username", async (req: any, res:any) =>{
-    //validate request
-    if(!req.query.username) return res.json(ERROR_RESPONSE.INVALID_REQUEST);
-    else {
 
-        //determine query params
-         let username:string, uId:any = null;
-         if(req.query.uId) uId = req.query.uId;
-         username = req.query.username;
-        
-        //checkUsername
-         try{
-             let result = <Result<SResponse, Error>>await User.checkUsername(username, uId)
-             if(result) return res.json(result.get())
-         }catch(error){
-             return res.json(error.get())
-         }
-    }  
-})
-
-main.get("/validate/email", async (req: any, res:any) =>{
-    //validate request
-    if(!req.query.email) return res.json(ERROR_RESPONSE.INVALID_REQUEST);
-    else {
-
-        //determine query params
-         let email:string, uId:any = null;
-         if(req.query.uId) uId = req.query.uId;
-         email = req.query.email;
-        
-        //checkUsername
-         try{
-             let result = <Result<SResponse, Error>>await User.checkEmail(email, uId)
-             if(result) return res.json(result.get())
-         }catch(error){
-             return res.json(error.get())
-         }
-    }  
-})
 
 /**
 * @method GET
@@ -121,15 +83,18 @@ main.post("/category", async(req:any, res:any) => {
 })
 
 
+
+
+
 /**
  * @method GET
  * Validates the phone number, generates a 5 digit code and sends an SMS.
- * @return PhoneVerification (type) the code, phone number, messageId.
-  */
+ * @return PhoneVerification (type) the code, phone-number, messageId.
+*/
 main.get("/phonenumbbercode", async(req: any, res:any) =>{
     if(!req.query.pn) return res.json(ERROR_RESPONSE.INVALID_REQUEST)
     try{
-        let validateRes = <Result<SResponse, Error>>await User.validatePhone(req.query.pn);
+        let validateRes = <Result<SResponse, Error>>await User.checkPhone(req.query.pn);
         if(validateRes){
             let code:number = genVerificationCode();
             var params = {
@@ -157,10 +122,14 @@ main.get("/phonenumbbercode", async(req: any, res:any) =>{
     }
 })
 
+
+
+
+
 main.get("/sendSMS", async(req: any, res:any) =>{
     if(!req.query.pn) return res.json(ERROR_RESPONSE.INVALID_REQUEST)
     try{
-        let validateRes = <Result<SResponse, Error>>await User.validatePhone(req.query.pn);
+        let validateRes = <Result<SResponse, Error>>await User.checkPhone(req.query.pn);
         if(validateRes){
            
             var params = {

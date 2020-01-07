@@ -50,9 +50,10 @@ var jwt = require('jsonwebtoken');
 var RESPONSES = require('../functions/helperConstants').RESPONSES;
 var Result_1 = __importDefault(require("./Result"));
 var FS = __importStar(require("./settings/FieldSettings"));
-var dbConfig_1 = require("./config/dbConfig");
 var ErrorResponse_1 = require("./helper/ErrorResponse");
 var Response_1 = require("./helper/Response");
+//get database connection instance
+var dbConfig_1 = require("./config/dbConfig");
 var User = /** @class */ (function () {
     function User() {
     }
@@ -244,6 +245,51 @@ var User = /** @class */ (function () {
             });
         });
     };
+    User.checkPhone = function (phone) {
+        return __awaiter(this, void 0, void 0, function () {
+            var fs, phoneExp, client, queryText, res, e_4;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        fs = FS.PhoneNumberSettings;
+                        phoneExp = /^[0-9]*$/;
+                        if (!phone) return [3 /*break*/, 9];
+                        if (!(phone.length != 11)) return [3 /*break*/, 1];
+                        return [2 /*return*/, Promise.reject(Result_1.default.Failure(ErrorResponse_1.ERROR_RESPONSE.phoneNumber.invalid))];
+                    case 1:
+                        if (!!(phoneExp.test(phone))) return [3 /*break*/, 2];
+                        return [2 /*return*/, Promise.reject(Result_1.default.Failure(ErrorResponse_1.ERROR_RESPONSE.phoneNumber.invalid))];
+                    case 2: return [4 /*yield*/, dbConfig_1.firepool.connect()];
+                    case 3:
+                        client = _a.sent();
+                        _a.label = 4;
+                    case 4:
+                        _a.trys.push([4, 7, 8, 9]);
+                        return [4 /*yield*/, client.query('BEGIN')];
+                    case 5:
+                        _a.sent();
+                        queryText = 'SELECT phone FROM _user WHERE phone_number=$1 AND phone_number_ext=$2';
+                        return [4 /*yield*/, client.query(queryText, [phone, "1"])];
+                    case 6:
+                        res = _a.sent();
+                        if (res.rows.length == 0) {
+                            return [2 /*return*/, Promise.resolve(Result_1.default.Success(Response_1.RESPONSE.phoneNumber.valid))];
+                        }
+                        else {
+                            return [2 /*return*/, Promise.reject(Result_1.default.Failure(ErrorResponse_1.ERROR_RESPONSE.phoneNumber.taken))];
+                        }
+                        return [3 /*break*/, 9];
+                    case 7:
+                        e_4 = _a.sent();
+                        return [2 /*return*/, Promise.reject(Result_1.default.Failure(ErrorResponse_1.ERROR_RESPONSE.INVALID_REQUEST))];
+                    case 8:
+                        client.release();
+                        return [7 /*endfinally*/];
+                    case 9: return [2 /*return*/, Promise.reject(Result_1.default.Failure(ErrorResponse_1.ERROR_RESPONSE.phoneNumber.invalid))];
+                }
+            });
+        });
+    };
     /**
     * Checks and validates password.
     * @param {string} password - password to check
@@ -261,21 +307,6 @@ var User = /** @class */ (function () {
                         return [2 /*return*/, Promise.resolve(Result_1.default.Success(Response_1.RESPONSE.password.valid))];
                 }
                 return [2 /*return*/, Promise.reject(Result_1.default.Failure(ErrorResponse_1.ERROR_RESPONSE.INVALID_REQUEST))];
-            });
-        });
-    };
-    User.validatePhone = function (phone) {
-        return __awaiter(this, void 0, void 0, function () {
-            var fs;
-            return __generator(this, function (_a) {
-                fs = FS.PhoneNumberSettings;
-                if (phone) {
-                    if (phone.length < fs.minLength || phone.length > fs.maxLength)
-                        return [2 /*return*/, Promise.reject(Result_1.default.Failure(ErrorResponse_1.ERROR_RESPONSE.phoneNumber.invalid))];
-                    else
-                        return [2 /*return*/, Promise.resolve(Result_1.default.Success(Response_1.RESPONSE.phoneNumber.valid))];
-                }
-                return [2 /*return*/, Promise.reject(Result_1.default.Failure(ErrorResponse_1.ERROR_RESPONSE.phoneNumber.invalid))];
             });
         });
     };

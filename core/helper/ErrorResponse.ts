@@ -62,6 +62,11 @@ export const ERROR_RESPONSE = {
             message: "Invalid Phone Number.",
             type: "PHONE_INVALID",
             code: 322
+        },
+        taken: <Error>{
+            message: "An account with this phone already exists.",
+            type: "PHONE_TAKEN",
+            code: 422
         }
     }
 }

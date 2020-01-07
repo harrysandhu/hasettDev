@@ -19,3 +19,5 @@ export default class Result<TSuccess, TError>{
         return ( (!this.isError) ? this.success : this.error )
     }
 }
+
+

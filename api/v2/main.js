@@ -77,69 +77,13 @@ main.get("/", verifyAuthToken, function (req, res) { return __awaiter(void 0, vo
         }
     });
 }); });
-main.get("/validate/username", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var username, uId, result, error_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (!!req.query.username) return [3 /*break*/, 1];
-                return [2 /*return*/, res.json(ErrorResponse_1.ERROR_RESPONSE.INVALID_REQUEST)];
-            case 1:
-                username = void 0, uId = null;
-                if (req.query.uId)
-                    uId = req.query.uId;
-                username = req.query.username;
-                _a.label = 2;
-            case 2:
-                _a.trys.push([2, 4, , 5]);
-                return [4 /*yield*/, User_1.default.checkUsername(username, uId)];
-            case 3:
-                result = _a.sent();
-                if (result)
-                    return [2 /*return*/, res.json(result.get())];
-                return [3 /*break*/, 5];
-            case 4:
-                error_2 = _a.sent();
-                return [2 /*return*/, res.json(error_2.get())];
-            case 5: return [2 /*return*/];
-        }
-    });
-}); });
-main.get("/validate/email", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var email, uId, result, error_3;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (!!req.query.email) return [3 /*break*/, 1];
-                return [2 /*return*/, res.json(ErrorResponse_1.ERROR_RESPONSE.INVALID_REQUEST)];
-            case 1:
-                email = void 0, uId = null;
-                if (req.query.uId)
-                    uId = req.query.uId;
-                email = req.query.email;
-                _a.label = 2;
-            case 2:
-                _a.trys.push([2, 4, , 5]);
-                return [4 /*yield*/, User_1.default.checkEmail(email, uId)];
-            case 3:
-                result = _a.sent();
-                if (result)
-                    return [2 /*return*/, res.json(result.get())];
-                return [3 /*break*/, 5];
-            case 4:
-                error_3 = _a.sent();
-                return [2 /*return*/, res.json(error_3.get())];
-            case 5: return [2 /*return*/];
-        }
-    });
-}); });
 /**
 * @method GET
 * Gets the related categories to the query category keyword.
 * @return CategoryResult ->  Category[]
  */
 main.get("/category", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var result, error_4;
+    var result, error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -156,9 +100,9 @@ main.get("/category", function (req, res) { return __awaiter(void 0, void 0, voi
                 }
                 return [3 /*break*/, 4];
             case 3:
-                error_4 = _a.sent();
-                console.log(error_4);
-                return [2 /*return*/, res.json(error_4)];
+                error_2 = _a.sent();
+                console.log(error_2);
+                return [2 /*return*/, res.json(error_2)];
             case 4: return [2 /*return*/];
         }
     });
@@ -169,7 +113,7 @@ main.get("/category", function (req, res) { return __awaiter(void 0, void 0, voi
 * @return CategoryResult ->  Category[]
  */
 main.post("/category", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var result, error_5;
+    var result, error_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -186,9 +130,9 @@ main.post("/category", function (req, res) { return __awaiter(void 0, void 0, vo
                 }
                 return [3 /*break*/, 4];
             case 3:
-                error_5 = _a.sent();
-                console.log(error_5);
-                return [2 /*return*/, res.json(error_5)];
+                error_3 = _a.sent();
+                console.log(error_3);
+                return [2 /*return*/, res.json(error_3)];
             case 4: return [2 /*return*/];
         }
     });
@@ -196,10 +140,10 @@ main.post("/category", function (req, res) { return __awaiter(void 0, void 0, vo
 /**
  * @method GET
  * Validates the phone number, generates a 5 digit code and sends an SMS.
- * @return PhoneVerification (type) the code, phone number, messageId.
-  */
+ * @return PhoneVerification (type) the code, phone-number, messageId.
+*/
 main.get("/phonenumbbercode", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var validateRes, code_1, params, publishTextPromise, error_6;
+    var validateRes, code_1, params, publishTextPromise, error_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -208,7 +152,7 @@ main.get("/phonenumbbercode", function (req, res) { return __awaiter(void 0, voi
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, User_1.default.validatePhone(req.query.pn)];
+                return [4 /*yield*/, User_1.default.checkPhone(req.query.pn)];
             case 2:
                 validateRes = _a.sent();
                 if (validateRes) {
@@ -230,15 +174,15 @@ main.get("/phonenumbbercode", function (req, res) { return __awaiter(void 0, voi
                 }
                 return [3 /*break*/, 4];
             case 3:
-                error_6 = _a.sent();
-                console.log(error_6);
-                return [2 /*return*/, res.json(error_6)];
+                error_4 = _a.sent();
+                console.log(error_4);
+                return [2 /*return*/, res.json(error_4)];
             case 4: return [2 /*return*/];
         }
     });
 }); });
 main.get("/sendSMS", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var validateRes, params, publishTextPromise, error_7;
+    var validateRes, params, publishTextPromise, error_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -247,7 +191,7 @@ main.get("/sendSMS", function (req, res) { return __awaiter(void 0, void 0, void
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, User_1.default.validatePhone(req.query.pn)];
+                return [4 /*yield*/, User_1.default.checkPhone(req.query.pn)];
             case 2:
                 validateRes = _a.sent();
                 if (validateRes) {
@@ -268,9 +212,9 @@ main.get("/sendSMS", function (req, res) { return __awaiter(void 0, void 0, void
                 }
                 return [3 /*break*/, 4];
             case 3:
-                error_7 = _a.sent();
-                console.log(error_7);
-                return [2 /*return*/, res.json(error_7)];
+                error_5 = _a.sent();
+                console.log(error_5);
+                return [2 /*return*/, res.json(error_5)];
             case 4: return [2 /*return*/];
         }
     });

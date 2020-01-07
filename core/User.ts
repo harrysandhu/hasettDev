@@ -5,13 +5,15 @@ let RESPONSES:any = require('../functions/helperConstants').RESPONSES;
 import Result from './Result'
 import Error from './Interfaces/Error'
 import SResponse from './Interfaces/SResponse'
+import InviteSResponse from './Interfaces/InviteSResponse'
 import * as FS from "./settings/FieldSettings"
-import {firepool} from './config/dbConfig'
 import {ERROR_RESPONSE} from './helper/ErrorResponse'
 import {RESPONSE} from './helper/Response'
 
+//get database connection instance
+import {firepool} from './config/dbConfig'
 
-
+ 
 
 export default class User {
     constructor(){}
@@ -161,6 +163,38 @@ export default class User {
         }
     }
 
+
+    static async checkPhone(phone:string): Promise<Result<SResponse, Error>>{
+        let fs = FS.PhoneNumberSettings;
+        let phoneExp:any = /^[0-9]*$/;
+        if(phone){
+            if(phone.length != 11){
+                return Promise.reject(Result.Failure(ERROR_RESPONSE.phoneNumber.invalid))
+            }else if (!(phoneExp.test(phone))){
+                return Promise.reject(Result.Failure(ERROR_RESPONSE.phoneNumber.invalid))
+            }
+            else{ 
+                 const client = await firepool.connect();  
+                try{
+                   
+                    await client.query('BEGIN')
+                    let queryText = 'SELECT phone FROM _user WHERE phone_number=$1 AND phone_number_ext=$2';
+                    let res = await client.query(queryText, [phone, "1"]);
+                    if(res.rows.length == 0){
+                        return Promise.resolve(Result.Success(RESPONSE.phoneNumber.valid))
+                    }else{
+                        return Promise.reject(Result.Failure(ERROR_RESPONSE.phoneNumber.taken))
+                    }
+                }catch(e){
+                    return Promise.reject(Result.Failure(ERROR_RESPONSE.INVALID_REQUEST))
+                }finally{
+                    client.release();
+                }
+            }  
+    }
+     return Promise.reject(Result.Failure(ERROR_RESPONSE.phoneNumber.invalid))
+    }
+
     /**
     * Checks and validates password.
     * @param {string} password - password to check
@@ -181,18 +215,6 @@ export default class User {
     }
 
 
-    static async validatePhone(phone:string) :Promise<Result<SResponse, Error>>{
-        let fs = FS.PhoneNumberSettings;
-        if(phone){
-            if(phone.length < fs.minLength || phone.length > fs.maxLength)
-                return Promise.reject(Result.Failure(ERROR_RESPONSE.phoneNumber.invalid))
-            else
-                return Promise.resolve(Result.Success(RESPONSE.phoneNumber.valid))
-        }
-   
 
-    return Promise.reject(Result.Failure(ERROR_RESPONSE.phoneNumber.invalid))
- }
-    
 
 }
