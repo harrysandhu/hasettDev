@@ -7,8 +7,10 @@ var io = require('socket.io')(server)
 var api = require('./api/api')
 //v2 api
 var main = require('./api/v2/main')
+var validate = require('./api/v2/validate')
 var auth = require("./api/auth")
 var media = require("./api/media")
+
 var bodyParser = require("body-parser")
 var morganLogger = require("morgan")
 var cors = require('cors')
@@ -40,4 +42,7 @@ app.get("/text2", (req, res) =>{
 app.use("/api", api)
 app.use("/api/auth", auth)
 app.use("/media", media)
+
+//v2 development api
 app.use("/api/v2", main)
+app.use("/api/validate", validate)
