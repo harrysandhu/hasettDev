@@ -1,7 +1,5 @@
-
 import express from 'express';
 let main:any = express.Router();
-
 let fs:any = require('fs')
 let jwt:any = require('jsonwebtoken')
 let crypto:any = require('crypto')
@@ -9,7 +7,6 @@ let sha256:any = require('js-sha256')
 let privateKey:any = fs.readFileSync('./security/private.key', 'utf8')
 let publicKey:any = fs.readFileSync('./security/public.key', 'utf8')
 let mysql:any = require("mysql")
-
 let verifyAuthToken:any = require('../../functions/helpers').verifyAuthToken;
 let genVerificationCode:any = require('../../functions/helpers').genVerificationCode;
 let RESPONSES:any = require('../../functions/helperConstants').RESPONSES;
@@ -27,6 +24,9 @@ import CategoryInterface  from '../../core/Category'
 import {ERROR_RESPONSE} from '../../core/helper/ErrorResponse'
 import {RESPONSE} from '../../core/helper/Response'
 import AWS from 'aws-sdk';
+import {firepool} from '../../core/config/dbConfig'
+
+
 require('dotenv').config();
 
 
@@ -110,8 +110,22 @@ main.get("/phonenumbbercode", async(req: any, res:any) =>{
              var publishTextPromise = new AWS.SNS({ apiVersion: '2010-03-31' }).publish(params).promise();
 
     publishTextPromise.then(
-        function (data) {
-            res.end(JSON.stringify({ MessageID: data.MessageId, code : code, phoneNumber: req.query.pn }));
+        async function (data) {
+            const client = await firepool.connect();
+            try{
+                await client.query('BEGIN');
+                let queryText = 'INSERT INTO _phone_number(phone_number, phone_number_ext, pn_code) VALUES ($1, $2, $3)';
+                let values = [req.query.pn, "1", code];
+                let result = await client.query(queryText, values);
+                if(result) client.release();
+                res.end(JSON.stringify({ MessageID: data.MessageId, code : code, phoneNumber: req.query.pn }));
+                
+            }catch(insertError){
+                client.release();
+                console.log(insertError);
+                throw ERROR_RESPONSE.INVALID_REQUEST; 
+            }
+            
         })
         
         }
