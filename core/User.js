@@ -268,8 +268,8 @@ var User = /** @class */ (function () {
                         return [4 /*yield*/, client.query('BEGIN')];
                     case 5:
                         _a.sent();
-                        queryText = 'SELECT phone FROM _user WHERE phone_number=$1 AND phone_number_ext=$2';
-                        return [4 /*yield*/, client.query(queryText, [phone, "1"])];
+                        queryText = 'SELECT phone_number FROM _user WHERE phone_number=$1';
+                        return [4 /*yield*/, client.query(queryText, [phone])];
                     case 6:
                         res = _a.sent();
                         if (res.rows.length == 0) {
@@ -281,6 +281,7 @@ var User = /** @class */ (function () {
                         return [3 /*break*/, 9];
                     case 7:
                         e_4 = _a.sent();
+                        console.log("error at checkphone", e_4);
                         return [2 /*return*/, Promise.reject(Result_1.default.Failure(ErrorResponse_1.ERROR_RESPONSE.INVALID_REQUEST))];
                     case 8:
                         client.release();

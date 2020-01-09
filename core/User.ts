@@ -178,8 +178,8 @@ export default class User {
                 try{
                    
                     await client.query('BEGIN')
-                    let queryText = 'SELECT phone_number FROM _user WHERE phone_number=$1 AND phone_number_ext=$2';
-                    let res = await client.query(queryText, [phone, "1"]);
+                    let queryText = 'SELECT phone_number FROM _user WHERE phone_number=$1';
+                    let res = await client.query(queryText, [phone]);
                     if(res.rows.length == 0){
                         return Promise.resolve(Result.Success(RESPONSE.phoneNumber.valid))
                     }else{
