@@ -91,7 +91,7 @@ main.post("/category", async(req:any, res:any) => {
  * Validates the phone number, generates a 5 digit code and sends an SMS.
  * @return PhoneVerification (type) the code, phone-number, messageId.
 */
-main.get("/phonenumbbercode", async(req: any, res:any) =>{
+main.get("/phonenumbercode", async(req: any, res:any) =>{
     if(!req.query.pn) return res.json(ERROR_RESPONSE.INVALID_REQUEST)
     try{
         let validateRes = <Result<SResponse, Error>>await User.checkPhone(req.query.pn);
@@ -110,25 +110,11 @@ main.get("/phonenumbbercode", async(req: any, res:any) =>{
              var publishTextPromise = new AWS.SNS({ apiVersion: '2010-03-31' }).publish(params).promise();
 
     publishTextPromise.then(
-        async function (data) {
-            const client = await firepool.connect();
-            try{
-                await client.query('BEGIN');
-                let queryText = 'INSERT INTO _phone_number(phone_number, phone_number_ext, pn_code) VALUES ($1, $2, $3)';
-                let values = [req.query.pn, "1", code];
-                let result = await client.query(queryText, values);
-                if(result) client.release();
-                res.end(JSON.stringify({ MessageID: data.MessageId, code : code, phoneNumber: req.query.pn }));
-                
-            }catch(insertError){
-                client.release();
-                console.log(insertError);
-                throw ERROR_RESPONSE.INVALID_REQUEST; 
-            }
-            
+        function (data) {
+            res.end(JSON.stringify({ MessageID: data.MessageId, code : code, phoneNumber: req.query.pn }));
         })
         
-        }
+    }
 
     }catch(error){
         console.log(error)

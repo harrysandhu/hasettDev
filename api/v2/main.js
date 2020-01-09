@@ -142,7 +142,7 @@ main.post("/category", function (req, res) { return __awaiter(void 0, void 0, vo
  * Validates the phone number, generates a 5 digit code and sends an SMS.
  * @return PhoneVerification (type) the code, phone-number, messageId.
 */
-main.get("/phonenumbbercode", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+main.get("/phonenumbercode", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var validateRes, code_1, params, publishTextPromise, error_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
